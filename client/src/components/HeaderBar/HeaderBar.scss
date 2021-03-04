@@ -1,0 +1,25 @@
+.hb {
+  border: 1px dashed black;
+  height: 15vh;
+  display: flex;
+  align-items: center;
+  padding-left: 10%;
+  background-color: #303643;
+  color: #fff;
+  margin-bottom: 4%;
+}
+
+.hb-employee-icon {
+  font-size: 10rem;
+  margin-right: 2%;
+}
+
+.hb-vert-separator {
+  border-left: 1px solid #fff;
+  height: 40%;
+  margin-right: 2%;
+}
+
+.hb-title {
+  font-size: 4rem;
+}
