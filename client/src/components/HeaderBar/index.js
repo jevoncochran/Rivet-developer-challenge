@@ -1,15 +1,16 @@
 import React from "react";
 import "./HeaderBar.scss";
 import { FaUsers } from "react-icons/fa";
+import { AiFillFolderOpen } from "react-icons/ai";
 
-export default function HeaderBar() {
+export default function HeaderBar(props) {
   return (
     <div className="hb">
       <div className="hb-employee-icon">
-        <FaUsers />
+        {props.page === "EmployeeList" ? <FaUsers /> : <AiFillFolderOpen />}
       </div>
       <div className="hb-vert-separator"></div>
-      <h1 className="hb-title">Employees</h1>
+      <h1 className="hb-title">{props.title}</h1>
     </div>
   );
 }

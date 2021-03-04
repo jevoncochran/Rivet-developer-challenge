@@ -1,0 +1,90 @@
+.ep {
+  //   border: 1px dashed black;
+  padding: 0 10%;
+
+  img {
+    margin-right: 10%;
+    height: 35vh;
+    width: auto;
+  }
+}
+
+.ep-route-div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ep-back-icon {
+  font-size: 5rem;
+  margin-right: 1%;
+}
+
+.ep-profile {
+  display: flex;
+}
+
+.ep-text {
+  //   border: 1px dashed black;
+  width: 40%;
+}
+
+.ep-name-div {
+  border-bottom: 1px solid black;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 3.5rem;
+    margin-right: 2%;
+  }
+
+  p {
+    font-size: 2rem;
+  }
+}
+
+.ep-name-div-icon {
+  font-size: 3rem;
+  margin-right: 1%;
+}
+
+.ep-contact-container {
+  border-bottom: 1px solid black;
+  height: 15vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.ep-text-large {
+  font-size: 2rem;
+}
+
+.ep-contact-div {
+  display: flex;
+}
+
+.ep-contact-category {
+  font-size: 1.5rem;
+  margin-right: 5%;
+}
+
+.ep-text-regular {
+  font-size: 1.5rem;
+}
+
+.ep-notes-container {
+  //   border: 1px dashed black;
+  height: 10vh;
+}
+
+.ep-notes-text {
+  //   border: 1px dashed black;
+  height: 80%;
+  margin-top: 20px;
+}
