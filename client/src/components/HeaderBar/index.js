@@ -10,7 +10,7 @@ export default function HeaderBar(props) {
         {props.page === "EmployeeList" ? <FaUsers /> : <AiFillFolderOpen />}
       </div>
       <div className="hb-vert-separator"></div>
-      <h1 className="hb-title">{props.title}</h1>
+      <h1 className="hb-title">{props.title} Test</h1>
     </div>
   );
 }
