@@ -10,7 +10,7 @@
 }
 
 .aem-content {
-  border: 1px solid black;
+  border: 1px solid #888;
   width: 80%;
   height: 73vh;
   margin: auto;
@@ -47,7 +47,7 @@
   //   margin-right: 5%;
 }
 
-.aem-img-placeholder {
+.aem-img {
   height: 200px;
   width: 200px;
   margin-bottom: 5%;
@@ -61,6 +61,10 @@
   background-color: #0084ba;
   color: #fff;
   font-size: 1.5rem;
+}
+
+.aem-pic-input {
+  display: none;
 }
 
 .aem-form {

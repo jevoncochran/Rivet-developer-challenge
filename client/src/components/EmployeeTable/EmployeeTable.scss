@@ -53,7 +53,27 @@
   td {
     border-bottom: 1px solid black;
     font-size: 1.5rem;
+    height: 9vh;
   }
+}
+
+.et-th-cell-div {
+  // border: 1px dashed black;
+  // display: flex;
+  align-items: center;
+  height: 9vh;
+
+  div {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+  }
+}
+
+.et-th-sort-icon {
+  font-size: 3rem;
+  margin-left: 2%;
+  display: none;
 }
 
 .et-tbl-name-cell {
@@ -79,10 +99,15 @@
 
 .et-tbl-icon-cell {
   //   border: 1px dashed black;
+  // display: flex;
+
+  height: 9vh !important;
+}
+
+.et-tbl-icon-cell-div {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  height: 9vh;
 }
 
 .et-tbl-icon {

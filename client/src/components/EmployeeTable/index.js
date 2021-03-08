@@ -1,30 +1,95 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./EmployeeTable.scss";
-import { AiOutlineSearch, AiFillProfile } from "react-icons/ai";
+import {
+  AiOutlineSearch,
+  AiFillProfile,
+  AiFillCaretDown,
+} from "react-icons/ai";
 import { MdModeEdit } from "react-icons/md";
 import { VscChromeClose } from "react-icons/vsc";
 import { RiAddFill } from "react-icons/ri";
-import axios from "axios";
+import { connect } from "react-redux";
 
-export default function EmployeeTable(props) {
+import { getEmployees, setEmployee } from "../../redux/actions/employeeActions";
+
+function EmployeeTable(props) {
   const [employees, setEmployees] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("https://codechallenge.rivet.work/api/v1/profiles", {
-        headers: {
-          token:
-            "2KsbQmoHHuzL2m6RpW4GWPJ3hTTdvVCXBRrEPuKGUnvxGycAEMdCJ9xTBLjpAH8C",
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setEmployees(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+  const [hoveredEmployee, setHoveredEmployee] = useState(null);
+
+  const [nameSortActive, setNameSortActive] = useState(false);
+
+  const [emailSortActive, setEmailSortActive] = useState(false);
+
+  // Save clicked employee object to Redux state
+  // Render modal for editing employee details
+  const editEmployee = (row) => {
+    props.setEmployee({
+      first_name: row.first_name,
+      last_name: row.last_name,
+      phone: row.phone,
+      email: row.email,
+      address: row.address,
+      city: row.city,
+      state: row.state,
+      zip: row.zip,
+      photo: row.photo,
+      notes: row.notes,
+      id: row.id,
+    });
+    props.openEditModal();
+  };
+
+  // Push to employee route, render EmployeeProfile
+  const renderProfile = (employee, employeeId) => {
+    props.setEmployee(employee);
+    props.history.push(`/employee/${employeeId}`);
+  };
+
+  // Sort employees in alphabetical order by last name
+  const nameSort = () => {
+    setEmployees((prev) => {
+      return [...prev].sort((a, b) => {
+        if (a.last_name.toLowerCase() < b.last_name.toLowerCase()) return -1;
+        if (a.last_name.toLowerCase() > b.last_name.toLowerCase()) return 1;
+        return 0;
       });
-  }, []);
+    });
+    setNameSortActive(true);
+    setEmailSortActive(false);
+  };
+
+  // Sort employees in alphabetical order by email
+  const emailSort = () => {
+    setEmployees((prev) => {
+      return [...prev].sort((a, b) => {
+        if (a.email.toLowerCase() < b.email.toLowerCase()) return -1;
+        if (a.last_name.toLowerCase() > b.email.toLowerCase()) return 1;
+        return 0;
+      });
+    });
+    setEmailSortActive(true);
+    setNameSortActive(false);
+  };
+
+  // Use employee.id to highlight row for that employee on hover
+  const employeeHighlight = (employeeId) => {
+    setHoveredEmployee(employeeId);
+  };
+
+  // Remove highlight when no employee is being hovered over
+  const noHighlight = () => {
+    setHoveredEmployee(null);
+  };
+
+  useEffect(() => {
+    props.getEmployees();
+    setEmployees(props.employees);
+    setNameSortActive(false);
+    setEmailSortActive(false);
+    console.log("useEffect with props.employeeUpdates as dependency ran");
+    console.log("props.employees when useEffect runs: ", props.employees);
+  }, [props.employeeUpdateToggle]);
 
   return (
     <div className="et">
@@ -35,23 +100,53 @@ export default function EmployeeTable(props) {
           </div>
           <p>Search</p>
         </div>
-        <button className="et-add-employee-btn" onClick={props.openModal}>
+        <button className="et-add-employee-btn" onClick={props.openAddModal}>
           <div>
             <RiAddFill />
           </div>
         </button>
       </div>
-      <table className="et-tbl">
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
+      <table className="et-tbl" onMouseLeave={noHighlight}>
+        <tr onMouseEnter={noHighlight}>
+          <th onClick={nameSort} className="et-th-cell-div">
+            <div>
+              Name
+              <span
+                className="et-th-sort-icon"
+                style={{ display: nameSortActive ? "inline" : "none" }}
+              >
+                <AiFillCaretDown />
+              </span>
+            </div>
+          </th>
+          <th onClick={emailSort} className="et-th-cell-div">
+            <div>
+              Email
+              <span
+                className="et-th-sort-icon"
+                style={{ display: emailSortActive ? "inline" : "none" }}
+              >
+                <AiFillCaretDown />
+              </span>
+            </div>
+          </th>
           <th>Phone</th>
           <th></th>
         </tr>
         {employees.map((employee) => (
-          <tr key={employee.id}>
+          <tr
+            key={employee.id}
+            onMouseEnter={() => employeeHighlight(employee.id)}
+            style={{
+              backgroundColor:
+                hoveredEmployee === employee.id ? "#F9F9FB" : "#fff",
+            }}
+          >
             <td>
-              <div className="et-tbl-name-cell">
+              <div
+                className="et-tbl-name-cell"
+                onClick={() => renderProfile(employee, employee.id)}
+              >
                 {employee.photo ? (
                   <img
                     src={employee.photo}
@@ -66,14 +161,22 @@ export default function EmployeeTable(props) {
             <td>{employee.email}</td>
             <td>{employee.phone}</td>
             <td className="et-tbl-icon-cell">
-              <div className="et-tbl-icon">
-                <AiFillProfile />
-              </div>
-              <div className="et-tbl-icon">
-                <MdModeEdit />
-              </div>
-              <div className="et-tbl-icon">
-                <VscChromeClose />
+              <div className="et-tbl-icon-cell-div">
+                <div
+                  className="et-tbl-icon"
+                  onClick={() => renderProfile(employee, employee.id)}
+                >
+                  <AiFillProfile />
+                </div>
+                <div
+                  className="et-tbl-icon"
+                  onClick={() => editEmployee(employee)}
+                >
+                  <MdModeEdit />
+                </div>
+                <div className="et-tbl-icon">
+                  <VscChromeClose />
+                </div>
               </div>
             </td>
           </tr>
@@ -82,3 +185,18 @@ export default function EmployeeTable(props) {
     </div>
   );
 }
+
+const mapStateToProps = (state) => {
+  return {
+    employees: state.employees,
+    selectedEmployee: state.selectedEmployee,
+    nameSortActive: state.nameSortActive,
+    emailSortActive: state.emailSortActive,
+    employeeUpdateToggle: state.employeeUpdateToggle,
+  };
+};
+
+export default connect(mapStateToProps, {
+  getEmployees,
+  setEmployee,
+})(EmployeeTable);
