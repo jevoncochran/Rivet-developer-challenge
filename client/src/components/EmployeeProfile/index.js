@@ -3,6 +3,7 @@ import "./EmployeeProfile.scss";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { MdBackspace } from "react-icons/md";
 import { connect } from "react-redux";
+import avatarPlaceholder from "../../assets/images/avatar_placeholder.png";
 
 function EmployeeProfile(props) {
   return (
@@ -17,7 +18,15 @@ function EmployeeProfile(props) {
         <p className="ep-text-large">Back To Employees</p>
       </div>
       <div className="ep-profile">
-        <img src={props.selectedEmployee.photo} alt="employee" />
+        <img
+          src={
+            props.selectedEmployee.photo
+              ? props.selectedEmployee.photo
+              : avatarPlaceholder
+          }
+          alt="employee"
+          className="ep-img"
+        />
         <div className="ep-text">
           <div className="ep-name-div">
             <h1>{`${props.selectedEmployee.first_name} ${props.selectedEmployee.last_name}`}</h1>

@@ -1,12 +1,6 @@
 .ep {
   //   border: 1px dashed black;
   padding: 0 10%;
-
-  img {
-    margin-right: 10%;
-    height: 35vh;
-    width: auto;
-  }
 }
 
 .ep-route-div {
@@ -22,6 +16,12 @@
 
 .ep-profile {
   display: flex;
+}
+
+.ep-img {
+  margin-right: 10%;
+  height: 35vh;
+  width: auto;
 }
 
 .ep-text {

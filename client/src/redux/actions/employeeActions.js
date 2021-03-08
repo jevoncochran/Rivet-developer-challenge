@@ -4,6 +4,8 @@ export const GET_EMPLOYEES_START = "GET_EMPLOYEES_START";
 export const GET_EMPLOYEES_SUCCESS = "GET_EMPLOYEES_SUCCESS";
 export const SET_EMPLOYEE_START = "SET_EMPLOYEE_START";
 export const SET_EMPLOYEE_SUCCESS = "SET_EMPLOYEE_SUCCESS";
+export const EMPLOYEE_UPDATE_TOGGLE_START = "EMPLOYEE_UPDATE_TOGGLE_START";
+export const EMPLOYEE_UPDATE_TOGGLE_SUCCESS = "EMPLOYEE_UPDATE_TOGGLE_SUCCESS";
 
 export const getEmployees = () => (dispatch) => {
   dispatch({ type: GET_EMPLOYEES_START });
@@ -26,4 +28,9 @@ export const getEmployees = () => (dispatch) => {
 export const setEmployee = (employee) => (dispatch) => {
   dispatch({ type: SET_EMPLOYEE_START });
   dispatch({ type: SET_EMPLOYEE_SUCCESS, payload: employee });
+};
+
+export const changeEmployeeUpdateToggle = () => (dispatch) => {
+  dispatch({ type: EMPLOYEE_UPDATE_TOGGLE_START });
+  dispatch({ type: EMPLOYEE_UPDATE_TOGGLE_SUCCESS });
 };

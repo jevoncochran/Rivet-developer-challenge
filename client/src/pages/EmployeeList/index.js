@@ -65,10 +65,4 @@ function EmployeeList(props) {
   );
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     selectedEmployee: state.selectedEmployee,
-//   };
-// };
-
 export default connect(null, { setEmployee })(EmployeeList);

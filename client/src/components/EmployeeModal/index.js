@@ -1,19 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./EmployeeModal.scss";
 import avatarPlaceholder from "../../assets/images/avatar_placeholder.png";
 import { VscChromeClose } from "react-icons/vsc";
 import StateSelect from "../StateSelect";
 import axios from "axios";
 import { connect } from "react-redux";
-import { setEmployee, getEmployees } from "../../redux/actions/employeeActions";
+import {
+  setEmployee,
+  getEmployees,
+  changeEmployeeUpdateToggle,
+} from "../../redux/actions/employeeActions";
+import { storage } from "../../firebase";
 
 function EmployeeModal(props) {
+  const [file, setFile] = useState(null);
+
+  // Profile pic url from Firebase storage
+  const [profilePicUrl, setProfilePicUrl] = useState(avatarPlaceholder);
+
+  // Status of image upload to Firebase storage
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Create variable to reference image file input
+  // Open image input file on click event
+  let imgInput = "";
+  const imgInputClick = (e) => {
+    e.preventDefault();
+    imgInput.click();
+  };
+
+  // update Redux state for employee on input onChange event
   const inputChangeHandler = (e) => {
     props.setEmployee({
       ...props.selectedEmployee,
       [e.target.name]: e.target.value,
     });
   };
+
+  // Save selected file in component state on image file input onChange event
+  const imgInputChangeHandler = (e) => {
+    if (e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (file) {
+      // Upload image file to Firebase storage
+      const uploadTask = storage.ref(`profile-pics/${file.name}`).put(file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setUploadProgress(progress);
+        },
+        (error) => {
+          console.log(error);
+        },
+        // Get image url from Firebase storage
+        // Update component state with image url
+        () => {
+          storage
+            .ref("profile-pics")
+            .child(file.name)
+            .getDownloadURL()
+            .then((url) => {
+              console.log(url);
+              setProfilePicUrl(url);
+            });
+        }
+      );
+    }
+  }, [file]);
 
   const closeModal = () => {
     props.setEmployee({
@@ -38,6 +98,7 @@ function EmployeeModal(props) {
   const handleSubmit = (e, employeeId) => {
     e.preventDefault();
     if (props.modalType === "New Employee") {
+      // Make .post call to add new employee to database
       axios
         .post(
           "https://codechallenge.rivet.work/api/v1/profile",
@@ -51,13 +112,15 @@ function EmployeeModal(props) {
         )
         .then((res) => {
           console.log(res.data);
-          props.getEmployees();
-          closeModal();
+          props.getEmployees().then(() => {
+            props.changeEmployeeUpdateToggle();
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
+      // Make .put call to update employee
       axios
         .put(
           `https://codechallenge.rivet.work/api/v1/profile/${employeeId}`,
@@ -71,14 +134,23 @@ function EmployeeModal(props) {
         )
         .then((res) => {
           console.log(res.data);
-          props.getEmployees();
-          closeModal();
+          props.getEmployees().then(() => {
+            props.changeEmployeeUpdateToggle();
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     }
+    closeModal();
   };
+
+  // Render uploaded employee image on modal
+  useEffect(() => {
+    if (profilePicUrl !== avatarPlaceholder) {
+      props.setEmployee({ ...props.selectedEmployee, photo: profilePicUrl });
+    }
+  }, [profilePicUrl]);
 
   return (
     <div className="aem">
@@ -91,15 +163,32 @@ function EmployeeModal(props) {
         </div>
         <div className="aem-content-bottom">
           <div className="aem-img-div">
-            <img
-              src={
-                props.modalType === "New Employee"
-                  ? avatarPlaceholder
-                  : props.selectedEmployee.photo
-              }
-              className="aem-img-placeholder"
+            <div
+              style={{
+                backgroundImage:
+                  props.modalType === "New Employee"
+                    ? `url(${profilePicUrl})`
+                    : profilePicUrl !== avatarPlaceholder
+                    ? `url(${profilePicUrl})`
+                    : !props.selectedEmployee.photo
+                    ? `url(${avatarPlaceholder})`
+                    : `url(${props.selectedEmployee.photo})`,
+                backgroundSize: profilePicUrl ? "cover" : "auto",
+              }}
+              className="aem-img"
+            ></div>
+            <button className="aem-img-btn" onClick={imgInputClick}>
+              {props.photoButton}
+            </button>
+            <input
+              className="aem-pic-input"
+              type="file"
+              id="prof-pic-file"
+              name="file"
+              placeholder="test"
+              onChange={imgInputChangeHandler}
+              ref={(ref) => (imgInput = ref)}
             />
-            <button className="aem-img-btn">{props.photoButton}</button>
           </div>
           <form
             className="aem-form"
@@ -235,6 +324,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { setEmployee, getEmployees })(
-  EmployeeModal
-);
+export default connect(mapStateToProps, {
+  setEmployee,
+  getEmployees,
+  changeEmployeeUpdateToggle,
+})(EmployeeModal);
