@@ -21,6 +21,10 @@ function EmployeeTable(props) {
 
   const [emailSortActive, setEmailSortActive] = useState(false);
 
+  const [query, setQuery] = useState(null);
+
+  const [searchActive, setSearchActive] = useState(false);
+
   // Save clicked employee object to Redux state
   // Render modal for editing employee details
   const editEmployee = (row) => {
@@ -82,6 +86,38 @@ function EmployeeTable(props) {
     setHoveredEmployee(null);
   };
 
+  const employeeSearch = (query) => {
+    let filteredEmployees = [];
+    if (query === "") {
+      filteredEmployees = props.employees;
+    } else {
+      props.employees.forEach((employee) => {
+        if (
+          employee.last_name.toLowerCase().includes(query.toLowerCase()) ||
+          employee.first_name.toLowerCase().includes(query.toLowerCase()) ||
+          employee.email.toLowerCase().includes(query.toLowerCase())
+        ) {
+          filteredEmployees.push(employee);
+        }
+      });
+    }
+    filteredEmployees.sort((a, b) => {
+      if (a.last_name.toLowerCase() < b.last_name.toLowerCase()) return -1;
+      if (a.last_name.toLowerCase() > b.last_name.toLowerCase()) return 1;
+      return 0;
+    });
+    setEmployees(filteredEmployees);
+  };
+
+  const closeSearchInput = () => {
+    props.getEmployees();
+    setEmployees(props.employees);
+    setSearchActive(false);
+    setQuery("");
+  };
+
+  // Make .get call to retrieve employees
+  // On initial render and each time an employee is added or updated
   useEffect(() => {
     props.getEmployees();
     setEmployees(props.employees);
@@ -91,14 +127,30 @@ function EmployeeTable(props) {
     console.log("props.employees when useEffect runs: ", props.employees);
   }, [props.employeeUpdateToggle]);
 
+  useEffect(() => {
+    if (query !== null) {
+      employeeSearch(query);
+    }
+  }, [query]);
+
   return (
     <div className="et">
       <div className="et-top">
         <div className="et-search-div">
-          <div className="et-search-icon">
-            <AiOutlineSearch />
+          <div className="et-search-icon" onClick={() => setSearchActive(true)}>
+            {!searchActive && <AiOutlineSearch />}
           </div>
-          <p>Search</p>
+          <div className="et-search-icon" onClick={closeSearchInput}>
+            {searchActive && <VscChromeClose />}
+          </div>
+          {!searchActive && <p>Search</p>}
+          {searchActive && (
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            ></input>
+          )}
         </div>
         <button className="et-add-employee-btn" onClick={props.openAddModal}>
           <div>
